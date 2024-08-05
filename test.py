@@ -1,3 +1,2 @@
-l = [1, 2]
-print(id(l))
-print(id(l * 4))
+data = [1, 2, 3]
+print(1 in data)
