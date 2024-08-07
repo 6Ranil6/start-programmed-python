@@ -34,11 +34,17 @@ PATH = "/home/ranil/Рабочий стол/StudingPython/Unit8/ProgrammedEx/ex1
 def ReadFile():
     
     file_list = []
-    with open(PATH, 'r') as outfile:
-        file_list = outfile.readlines()
-    file_list = [el.rstrip() for el in file_list]
-
-    return file_list
+    while True:
+        try:
+            global PATH
+            with open(PATH, 'r') as outfile:
+                file_list = outfile.readlines()
+            file_list = [el.rstrip() for el in file_list]
+        except IOError:
+            print("Такого файла нет")
+            PATH = input("Введите путь к файлу: ")
+        else:
+            return file_list
 
 
 def getListData(file_list):
