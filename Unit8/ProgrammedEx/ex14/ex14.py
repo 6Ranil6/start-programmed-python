@@ -92,7 +92,7 @@ def getmidPriceYear(data):
     weeks = [0]
     years = [data[0][0].year]
     for i in range(len(data[0])):
-        if data[0][i].year == data[0][i - 1].year or index == 0:
+        if data[0][i].year == data[0][i - 1].year or i == 0:
             summ[index] += data[1][i]
             weeks[index] += 1
         else:
@@ -117,8 +117,8 @@ def main():
     data = getListData(ReadFile())
     mid_price, years = getmidPriceYear(data)
     PrintMidPriceYears(mid_price, years)
-    mid_price, months = getmidPriceMonth(data)
-    PrintMidPriceMonths(mid_price, months)
+    # mid_price, months = getmidPriceMonth(data)
+    # PrintMidPriceMonths(mid_price, months)
 
 if __name__ == "__main__":
     main()
