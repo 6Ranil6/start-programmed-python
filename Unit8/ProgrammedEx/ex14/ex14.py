@@ -10,6 +10,7 @@
 # Цена — это средняя цена галлона бензина в указанный день.
 # В рамках этого задания необходимо написать одну или несколько программ, которые
 # считывают содержимое данного файла и выполняют приведенные ниже вычисления.
+
 # •Средняя цена за год: вычисляет среднюю цену бензина за год для каждого года
 # в файле. (Данные файла начинаются апрелем 1993 года и заканчиваются августом
 # 2013 года. Используйте данные, предоставленные за период с 1993 по 2013 год.)
@@ -28,8 +29,8 @@
 # разных программ, по одной для каждого вычисления.
 
 import datetime
-
-PATH = "/home/ranil/Рабочий стол/StudingPython/Unit8/ProgrammedEx/ex14/data.txt"
+NAMEFILE = "data.txt"
+PATH = f"/home/ranil/Рабочий стол/StudingPython/Unit8/ProgrammedEx/ex14/{NAMEFILE}"
 
 def ReadFile():
     
@@ -46,7 +47,8 @@ def ReadFile():
         else:
             return file_list
 
-
+# data[0] идет обращение к дате
+# data[1] идет обращение к цене
 def getListData(file_list):
     data = []
     data.append([ datetime.datetime.strptime(el[:el.find(':')], "%m-%d-%Y") for el in file_list]) # здесь будет находиться данные даты
@@ -102,6 +104,29 @@ def getmidPriceYear(data):
             years.append(data[0][i].year)
     return [round(summ[i]/weeks[i], 2) for i in range(index + 1)], years
 
+def getMinMaxPrice(data):
+    max_value = [] 
+    max_value.append(data[1][0])
+    min_value = []
+    min_value.append(data[1][0])
+    index = 0
+    for i in range(1, len(data[0])):
+        if data[0][i].year == data[0][i - 1].year:
+            if data[1][i] > max_value[len(max_value) - 1]:
+                max_value[index] = data[1][i]
+            elif data[1][i] < min_value[len(min_value) - 1]:
+                min_value[index] = data[1][i]
+        else:
+            max_value.append(data[1][i])
+            min_value.append(data[1][i])
+            index += 1
+    return min_value, max_value
+
+def PrintMaxMinValue(min_value, max_value, years):
+    print("Вывод максимальной и минимальной цены за год: ")
+    for i in range(len(min_value)):
+        print(f"В {years[i]} минимальная = {min_value[i]} максимальная = {max_value[i]}")
+
 def PrintMidPriceYears(midPr, years):
     print("Средняя цена за год: ")
     for i in range(len(years)):
@@ -112,13 +137,56 @@ def PrintMidPriceMonths(midPr, date):
     for i in range(len(midPr)):
         print(f"{date[0][i]}-{date[1][i]} : {midPr[i]}")
 
+def bubble_sort_data(data):
+    n = len(data[0])
+
+    # Проходим по всему массиву n-1 раз
+    for i in range(n-1):
+        # Для каждого прохода, последние i элементов уже отсортированы
+        for j in range(0, n-i-1):
+            # Если текущий элемент больше следующего, меняем их местами
+            if data[1][j] > data[1][j+1]:
+                data[1][j], data[1][j+1] = data[1][j+1], data[1][j]
+                data[0][j], data[0][j+1] = data[0][j+1], data[0][j]
+    return data
+
+def bubble_resort_data(data):
+    n = len(data[0])
+
+    # Проходим по всему массиву n-1 раз
+    for i in range(n-1):
+        # Для каждого прохода, последние i элементов уже отсортированы
+        for j in range(0, n-i-1):
+            # Если текущий элемент меньше следующего, меняем их местами
+            if data[1][j] < data[1][j+1]:
+                data[1][j], data[1][j+1] = data[1][j+1], data[1][j]
+                data[0][j], data[0][j+1] = data[0][j+1], data[0][j]
+    return data
+
+def WriteInFileData_Sort(data, revers = False):
+    namefile = input("Введите название файла куда хотели бы записать данные: ")
+    path = f"/home/ranil/Рабочий стол/StudingPython/Unit8/ProgrammedEx/ex14/{namefile}"
+    if revers == True:
+        data = bubble_resort_data(data)
+    else:
+        data = bubble_sort_data(data)
+    with open(path, 'w') as newfile:
+        for i in range(len(data[0])):
+            newfile.write(str(data[0][i].date()) + ":" + str(data[1][i]) + "\n")
 
 def main():
     data = getListData(ReadFile())
     mid_price, years = getmidPriceYear(data)
     PrintMidPriceYears(mid_price, years)
-    # mid_price, months = getmidPriceMonth(data)
-    # PrintMidPriceMonths(mid_price, months)
+    mid_price, months = getmidPriceMonth(data)
+    PrintMidPriceMonths(mid_price, months)
+    min_value, max_value = getMinMaxPrice(data)
+    PrintMaxMinValue(min_value, max_value, years)
+    answer = input("Если хотите записать данные в убывающем пордке введите y: ")
+    if answer.lower() == "y":
+        WriteInFileData_Sort(data, True)
+    else:
+        WriteInFileData_Sort(data)
 
 if __name__ == "__main__":
     main()
