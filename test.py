@@ -1,76 +1,45 @@
-def dictinary():
-    dictinary = dict(zip([1, 2, 3], ["Ranil", "Naill", "Vera"]))
-    print(dictinary)
-    print(dictinary.keys())
-    print(dictinary.values())
-    print(dictinary.items())
-    print(dictinary.pop(1))
-    print(dictinary)
-    print(dictinary.popitem())
-    print(dictinary)
-    dictinary.clear()
-    dictinary[1] = "Ranil"
-    dictinary[1] = "NAil"
-    print(dictinary)
-    dictinary = { **{1: "ranil"}, **{2: "nail"}}
-    print(dictinary)
-
-def sets():
-    set1 = {1, 2, 3}
-    set1 = frozenset(set1)
-    set2 = set([1, 2])
-    print(set1, set2)
-    set2.discard(0)
-    set2.clear()
-    print(set2)
-    set2.add(2)
-    set2.update({1, 5})
-    print(set2)
-    print(set2.union(set1)) # |
-    print(set2.intersection(set1)) # &
-    print(set2.difference(set1)) # -
-    print(set2.symmetric_difference(set1)) # ^
-    print(set2.issubset(set1)) # >=
-    print(set2.issuperset(set1)) # <=
-    
-def paking():
-    *age, = 38, 68
-    dictinary = {
-        1:"Ranil",
-        2:"Vera"
-    }
-    
-    print()
-
-def string():
-    word = "hello"
-    print(word.isdigit(), word.isalnum(), word.isalpha(), word.isnumeric())
-    print(word.isupper(), word.islower(), word.isspace())
-    print("-" *  20)
-    print(word.capitalize(), word.upper(), word.lower(), (word + " world").title())
-    print(word.strip('h'))
-    print("-" *  20)
-    print(word.startswith("he"), word.endswith("ll"), word.split('l'), word.partition('l'), word.count('l'), word.replace(('l'), ('trash')))
-    print(word.ljust(10), word.center(10, 'p'))
-
 import re
-def regex():
-    word = "324 Ranil"
-    pattern = re.compile(r"[a-z]+\d?", flags= re.IGNORECASE)
-    print(re.match(pattern, word))
-    print(re.search(pattern, word).group())
-    print(re.sub(pattern, "Nail", word ))
-    print(re.fullmatch(pattern, word))
-    print(re.findall(pattern, word))
-    print(re.split(pattern, word))
-    print(re.escape(word))
+class Field(object):
 
-def main():
-    # dictinary()
-    sets()
-    # paking()
-    # string()
-    # regex()
+    def __init__(self):
+        self.table = dict()
+    
+    @staticmethod
+    def reshape(key):
 
-if __name__ == "__main__":
-    main()
+        if not isinstance(key, (tuple, str)):
+            raise TypeError
+        
+        if type(key) == tuple: key = str(key[0]) + str(key[1])
+        key = key.lower()
+
+        re_key = re.findall(r'\w{1}\d+|\d+\w{1}', key)
+ 
+        if len(re_key) != 1 or re_key[0] != key:
+            raise ValueError
+        
+        if key[0].isdigit() and key[-1].isdigit():
+            raise ValueError
+        
+        if key[0].isdigit(): key = key[-1] + key[:-1]
+
+        return key
+
+    def __setitem__(self, key, value):
+        self.table[self.reshape(key)] = value
+
+    def __getitem__(self, key):
+        try:
+            return self.table[self.reshape(key)]
+        except:
+            return None
+    
+    def __delitem__(self, key):
+        del self.table[self.reshape(key)]
+
+    def __contains__(self, key):
+        return self.reshape(key) in self.table
+
+    def __iter__(self):
+        for value in self.table:
+            yield self.table[value]
